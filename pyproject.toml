@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "dopagent_proxy"
+version = "0.1.0"
+description = ""
+authors = ["Darshan A S <itisdarshan@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+fastapi = "^0.62.0"
+uvicorn = "^0.13.1"
+
+[tool.poetry.dev-dependencies]
+pep8 = "^1.7.1"
+rope = "^0.18.0"
+black = "^20.8b1"
+pylint = "^2.6.0"
+flake8 = "^3.8.4"
+bandit = "^1.7.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
