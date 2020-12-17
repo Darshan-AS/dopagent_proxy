@@ -1,6 +1,8 @@
 from pydantic import BaseModel
+from toolz import first
 
-from .common import Spider, call_scraper
+from .common import call_scraper
+from .config import Spider
 
 
 class AuthRequest(BaseModel):
@@ -24,4 +26,4 @@ class AuthToken(BaseModel):
 def get_auth_token(agent_id: str, password: str) -> AuthToken:
     auth_request = AuthRequest(agent_id=agent_id, password=password)
     auth_response = call_scraper(auth_request)
-    return AuthToken.parse_obj(auth_response.items[0])
+    return AuthToken.parse_obj(first(auth_response.items))

@@ -1,16 +1,16 @@
-from enum import Enum
-
 import requests
 from pydantic import BaseModel
 
 from .config import BASE_URL
 
 
-class Spider(str, Enum):
-    auth_spider = 'auth'
-    accounts_spider = 'accounts'
-    installments_spider = 'installments'
-    reports_spider = 'reports'
+class CommonHeaderField(BaseModel):
+    Referer: str
+
+
+class CommonRequestField(BaseModel):
+    url: str
+    headers: CommonHeaderField
 
 
 class CommonResponse(BaseModel):
