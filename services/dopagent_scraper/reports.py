@@ -1,11 +1,12 @@
 from datetime import datetime
 from enum import Enum
+from typing import Any
 
 from pydantic import BaseModel
 from toolz import first
 
 from .auth import AuthToken
-from .common import CommonHeaderField, CommonRequestField, call_scraper
+from .common import CommonRequest, call_scraper
 from .config import Spider
 
 
@@ -32,12 +33,17 @@ class Report(BaseModel):
     base64_bytes: bytes
 
 
-class ReportsRequest(BaseModel):
-    request: CommonRequestField
-    spider_name: str = Spider.reports_spider
+class ReportsRequest(CommonRequest, spider=Spider.reports_spider):
     agent_id: str
     report_type: ReportType
     reference_number: str
+
+    def __init__(__pydantic_self__, auth_token: AuthToken, **kwargs: Any) -> None:
+        super().__init__(
+            auth_token.reports_url,
+            auth_token.referer_header,
+            **kwargs,
+        )
 
 
 def get_report(
@@ -47,13 +53,14 @@ def get_report(
     report_type: ReportType = ReportType.PDF,
 ) -> Report:
     reports_request = ReportsRequest(
-        request=CommonRequestField(
-            url=auth_token.reports_url,
-            headers=CommonHeaderField(Referer=auth_token.referer_header),
-        ),
+        auth_token,
         agent_id=agent_id,
         report_type=report_type,
         reference_number=reference_number,
     )
-    common_response = call_scraper(reports_request)
-    return Report.parse_obj(first(common_response.items))
+    common_response = call_scraper(reports_request, data_item=Report)
+    print(common_response)
+    return common_response.map_response(
+        lambda d: first(d.items),
+        lambda e: None,
+    )

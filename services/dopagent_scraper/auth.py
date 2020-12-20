@@ -25,5 +25,8 @@ class AuthToken(BaseModel):
 
 def get_auth_token(agent_id: str, password: str) -> AuthToken:
     auth_request = AuthRequest(agent_id=agent_id, password=password)
-    auth_response = call_scraper(auth_request)
-    return AuthToken.parse_obj(first(auth_response.items))
+    common_response = call_scraper(auth_request, data_item=AuthToken)
+    return common_response.map_response(
+        lambda d: first(d.items),
+        lambda e: None,
+    )

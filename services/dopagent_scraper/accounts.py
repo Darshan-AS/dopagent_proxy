@@ -1,9 +1,10 @@
 from datetime import date
+from typing import Any
 
 from pydantic import BaseModel
 
 from .auth import AuthToken
-from .common import CommonHeaderField, CommonRequestField, call_scraper
+from .common import HeadersField, CommonRequest, RequestField, call_scraper
 from .config import Spider
 
 
@@ -22,23 +23,30 @@ class Account(BaseModel):
     pending_installments: int
 
 
-class AccountsRequest(BaseModel):
-    request: CommonRequestField
-    spider_name: str = Spider.accounts_spider
+class AccountsRequest(CommonRequest, spider=Spider.accounts_spider):
     agent_id: str
     account_counter: int
 
+    def __init__(__pydantic_self__, auth_token: AuthToken, **kwargs: Any) -> None:
+        super().__init__(
+            auth_token.agent_enquire_screen_url,
+            auth_token.referer_header,
+            **kwargs,
+        )
+
 
 def fetch_accounts(
-    auth_token: AuthToken, agent_id: str, account_counter: int = 1
+    auth_token: AuthToken,
+    agent_id: str,
+    account_counter: int = 1,
 ) -> list[Account]:
     accounts_request = AccountsRequest(
-        request=CommonRequestField(
-            url=auth_token.agent_enquire_screen_url,
-            headers=CommonHeaderField(Referer=auth_token.referer_header),
-        ),
+        auth_token,
         agent_id=agent_id,
         account_counter=account_counter,
     )
-    common_response = call_scraper(accounts_request)
-    return list(map(Account.parse_obj, common_response.items))
+    common_response = call_scraper(accounts_request, data_item=Account)
+    return common_response.map_response(
+        lambda d: d.items,
+        lambda e: None,
+    )
