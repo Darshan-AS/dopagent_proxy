@@ -4,13 +4,7 @@ from typing import Any
 from pydantic import BaseModel
 
 from .auth import AuthToken
-from .common import (
-    DopagentException,
-    HeadersField,
-    CommonRequest,
-    RequestField,
-    call_scraper,
-)
+from .common import CommonRequest, DopagentException, call_scraper
 from .config import Spider
 
 
@@ -33,6 +27,7 @@ class AccountsRequest(CommonRequest, spider=Spider.accounts_spider):
     agent_id: str
     account_counter: int
 
+    # pylint: disable=no-self-argument
     def __init__(__pydantic_self__, auth_token: AuthToken, **kwargs: Any) -> None:
         super().__init__(
             auth_token.agent_enquire_screen_url,

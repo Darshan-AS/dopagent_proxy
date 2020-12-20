@@ -1,13 +1,9 @@
-from abc import ABC
 from enum import Enum
-from functools import partial
 from typing import Any, Callable, Generic, List, Optional, TypeVar
 
 import requests
 from pydantic import BaseModel, ValidationError, validator
 from pydantic.generics import GenericModel
-from pydantic.tools import parse_raw_as
-from toolz.functoolz import curry, excepts
 
 from .config import BASE_URL, Spider
 
@@ -32,6 +28,7 @@ class CommonRequest(BaseModel):
         super().__init_subclass__(**kwargs)
         cls.spider_name = spider
 
+    # pylint: disable=no-self-argument
     def __init__(__pydantic_self__, url, referer_header, **data: Any) -> None:
         request = RequestField(
             url=url,
@@ -67,6 +64,7 @@ class CommonResponse(GenericModel, Generic[DataT]):
     data: Optional[OkResponse[DataT]] = None
     error: Optional[ErrorResponse] = None
 
+    # pylint: disable=no-self-argument
     @validator("error", always=True)
     def check_consistency(cls, v, values):
         if v is not None and values["data"] is not None:
@@ -105,16 +103,16 @@ class DopagentException(Exception):
 
 def call_scraper(request_body: BaseModel, data_item: DataT) -> CommonResponse[DataT]:
     response = requests.post(BASE_URL, json=request_body.dict())
+
     try:
         return CommonResponse[data_item](
-            data=OkResponse[data_item].parse_raw(response.text),
+            data=OkResponse[data_item].parse_raw(response.text)
         )
     except ValidationError:
         pass
+
     try:
-        return CommonResponse[data_item](
-            error=ErrorResponse.parse_raw(response.text),
-        )
+        return CommonResponse[data_item](error=ErrorResponse.parse_raw(response.text))
     except ValidationError:
         return CommonResponse[data_item](
             error=ErrorResponse(

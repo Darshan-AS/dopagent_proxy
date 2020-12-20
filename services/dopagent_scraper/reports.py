@@ -38,6 +38,7 @@ class ReportsRequest(CommonRequest, spider=Spider.reports_spider):
     report_type: ReportType
     reference_number: str
 
+    # pylint: disable=no-self-argument
     def __init__(__pydantic_self__, auth_token: AuthToken, **kwargs: Any) -> None:
         super().__init__(
             auth_token.reports_url,
