@@ -6,7 +6,7 @@ from pydantic import BaseModel
 from toolz import first
 
 from .auth import AuthToken
-from .common import CommonRequest, call_scraper
+from .common import CommonRequest, DopagentException, call_scraper
 from .config import Spider
 
 
@@ -61,6 +61,8 @@ def get_report(
     common_response = call_scraper(reports_request, data_item=Report)
     print(common_response)
     return common_response.map_response(
-        lambda d: first(d.items),
-        lambda e: None,
+        lambda d: first(d.items)
+        if d.items
+        else DopagentException.throw("Error fetching report"),
+        lambda e: DopagentException.throw("Error fetching report", e),
     )

@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from toolz import first
 
 from .auth import AuthToken
-from .common import CommonRequest, call_scraper
+from .common import CommonRequest, DopagentException, call_scraper
 from .config import Spider
 
 
@@ -47,6 +47,8 @@ def prepare_installments(
     )
     common_response = call_scraper(installments_request, data_item=dict)
     return common_response.map_response(
-        lambda d: first(d.items)["reference_number"],
-        lambda e: None,
+        lambda d: rn
+        if d.items and (rn := first(d.items).get("reference_number"))
+        else DopagentException.throw("Error preparing installments"),
+        lambda e: DopagentException.throw("Error preparing installments", e),
     )

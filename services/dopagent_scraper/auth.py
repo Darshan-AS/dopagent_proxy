@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from toolz import first
 
-from .common import call_scraper
+from .common import DopagentException, call_scraper
 from .config import Spider
 
 
@@ -27,6 +27,8 @@ def get_auth_token(agent_id: str, password: str) -> AuthToken:
     auth_request = AuthRequest(agent_id=agent_id, password=password)
     common_response = call_scraper(auth_request, data_item=AuthToken)
     return common_response.map_response(
-        lambda d: first(d.items),
-        lambda e: None,
+        lambda d: first(d.items)
+        if d.items
+        else DopagentException.throw("Unauthorized"),
+        lambda e: DopagentException.throw("Unauthorized", e),
     )

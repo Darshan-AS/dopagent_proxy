@@ -4,7 +4,13 @@ from typing import Any
 from pydantic import BaseModel
 
 from .auth import AuthToken
-from .common import HeadersField, CommonRequest, RequestField, call_scraper
+from .common import (
+    DopagentException,
+    HeadersField,
+    CommonRequest,
+    RequestField,
+    call_scraper,
+)
 from .config import Spider
 
 
@@ -48,5 +54,5 @@ def fetch_accounts(
     common_response = call_scraper(accounts_request, data_item=Account)
     return common_response.map_response(
         lambda d: d.items,
-        lambda e: None,
+        lambda e: DopagentException.throw("Error fetching accounts", e),
     )

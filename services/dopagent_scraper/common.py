@@ -2,11 +2,11 @@ from abc import ABC
 from enum import Enum
 from functools import partial
 from typing import Any, Callable, Generic, List, Optional, TypeVar
-from pydantic.tools import parse_raw_as
 
 import requests
 from pydantic import BaseModel, ValidationError, validator
 from pydantic.generics import GenericModel
+from pydantic.tools import parse_raw_as
 from toolz.functoolz import curry, excepts
 
 from .config import BASE_URL, Spider
@@ -86,7 +86,21 @@ class CommonResponse(GenericModel, Generic[DataT]):
         data_fn: Callable[[OkResponse[DataT]], Any],
         error_fn: Callable[[ErrorResponse], Any] = id,
     ):
-        return data_fn(self.data) if self.has_data else error_fn(self.error)
+        return data_fn(self.data) if self.has_data() else error_fn(self.error)
+
+
+class DopagentException(Exception):
+    def __init__(self, message: str = "Something went wrong", extra: Any = None):
+        self.message = message
+        self.extra = extra
+        super().__init__(self.message)
+
+    def __str__(self):
+        return f"{self.message}: {self.extra}"
+
+    @classmethod
+    def throw(cls, *args, **kwargs):
+        raise cls(*args, **kwargs)
 
 
 def call_scraper(request_body: BaseModel, data_item: DataT) -> CommonResponse[DataT]:
