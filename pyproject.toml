@@ -8,6 +8,11 @@ authors = ["Darshan A S <itisdarshan@gmail.com>"]
 python = "^3.9"
 fastapi = "^0.62.0"
 uvicorn = "^0.13.1"
+ujson = "^4.0.1"
+requests = "^2.25.0"
+toolz = "^0.11.1"
+pydantic = "^1.7.3"
+pylint = "^2.6.0"
 
 [tool.poetry.dev-dependencies]
 pep8 = "^1.7.1"
