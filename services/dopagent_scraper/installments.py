@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel
+from pydantic.fields import Field
 from toolz import first
 
 from .auth import AuthToken
@@ -17,7 +18,7 @@ class PayMode(str, Enum):
 
 class InstallmentAccount(BaseModel):
     account_no: str
-    no_of_installments: int
+    no_of_installments: int = Field(ge=1)
 
 
 class InstallmentsRequest(CommonRequest, spider=Spider.installments_spider):
@@ -36,13 +37,12 @@ class InstallmentsRequest(CommonRequest, spider=Spider.installments_spider):
 
 def prepare_installments(
     auth_token: AuthToken,
-    agent_id: str,
     installment_accounts: list[InstallmentAccount],
     pay_mode: PayMode = PayMode.CASH,
 ) -> str:
     installments_request = InstallmentsRequest(
         auth_token,
-        agent_id=agent_id,
+        agent_id=auth_token.agent_id,
         pay_mode=pay_mode,
         accounts=installment_accounts,
     )

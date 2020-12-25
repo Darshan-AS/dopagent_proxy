@@ -47,15 +47,14 @@ class ReportsRequest(CommonRequest, spider=Spider.reports_spider):
         )
 
 
-def get_report(
+def fetch_report(
     auth_token: AuthToken,
-    agent_id: str,
     reference_number: str,
     report_type: ReportType = ReportType.PDF,
 ) -> Report:
     reports_request = ReportsRequest(
         auth_token,
-        agent_id=agent_id,
+        agent_id=auth_token.agent_id,
         report_type=report_type,
         reference_number=reference_number,
     )

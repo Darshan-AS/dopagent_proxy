@@ -15,6 +15,7 @@ class AuthRequest(BaseModel):
 class AuthToken(BaseModel):
     first_name: str
     last_name: str
+    agent_id: str
     dashboard_url: str
     change_password_url: str
     accounts_url: str
