@@ -36,13 +36,12 @@ class InstallmentsRequest(CommonRequest, spider=Spider.installments_spider):
 
 def prepare_installments(
     auth_token: AuthToken,
-    agent_id: str,
     installment_accounts: list[InstallmentAccount],
     pay_mode: PayMode = PayMode.CASH,
 ) -> str:
     installments_request = InstallmentsRequest(
         auth_token,
-        agent_id=agent_id,
+        agent_id=auth_token.agent_id,
         pay_mode=pay_mode,
         accounts=installment_accounts,
     )

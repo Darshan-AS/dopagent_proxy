@@ -38,12 +38,11 @@ class AccountsRequest(CommonRequest, spider=Spider.accounts_spider):
 
 def fetch_accounts(
     auth_token: AuthToken,
-    agent_id: str,
     account_counter: int = 1,
 ) -> list[Account]:
     accounts_request = AccountsRequest(
         auth_token,
-        agent_id=agent_id,
+        agent_id=auth_token.agent_id,
         account_counter=account_counter,
     )
     common_response = call_scraper(accounts_request, data_item=Account)
