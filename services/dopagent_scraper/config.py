@@ -1,6 +1,6 @@
 from enum import Enum
 
-BASE_URL = "http://localhost:9080/crawl.json"
+BASE_URL = "http://scraper:9080/crawl.json"
 
 
 class Spider(str, Enum):
