@@ -21,7 +21,7 @@ services:
             - ./:/dopagent_proxy
 
     scraper:
-        container_name: dopagent_scraper_container
+        container_name: dopagent_scraper_container_
         image: darshanas/dopagent_scraper:latest
         expose:
             - 9080
