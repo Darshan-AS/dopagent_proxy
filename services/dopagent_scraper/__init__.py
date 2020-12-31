@@ -1,3 +1,4 @@
+# flake8: noqa
 from .accounts import *
 from .auth import *
 from .installments import *
