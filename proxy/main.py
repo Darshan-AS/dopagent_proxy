@@ -1,9 +1,4 @@
-from typing import List, Optional
-
-from fastapi import FastAPI, Header, status
-from fastapi.params import Body, Depends
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from pydantic.main import BaseModel
+from fastapi import FastAPI
 from requests.sessions import Request
 from starlette.responses import JSONResponse
 

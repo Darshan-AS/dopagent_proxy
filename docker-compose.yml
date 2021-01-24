@@ -1,0 +1,27 @@
+# @format
+
+version: "3.8"
+
+services:
+    proxy:
+        container_name: dopagent_proxy_container
+        build:
+            context: .
+            target: dev
+        environment:
+            APP_MODULE: proxy.main:app
+            APP_HOST: 0.0.0.0
+            APP_PORT: 8000
+        ports:
+            - 8000:8000
+        working_dir: /dopagent_proxy
+        depends_on:
+            - scraper
+        volumes:
+            - ./:/dopagent_proxy
+
+    scraper:
+        container_name: dopagent_scraper_container_
+        image: darshanas/dopagent_scraper:latest
+        expose:
+            - 9080
